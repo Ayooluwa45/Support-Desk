@@ -1,31 +1,89 @@
-const asyncHandler = require('express-async-handler')
+const asyncHandler = require("express-async-handler");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
+const User = require("../models/userModel");
 
 //@desc   Register a new user
 // @route  /api/users
 //@access  Public
 
-const registerUser = asyncHandler(async (req, res)=>{
-    const {name, email, password}= req.body
-  
+const registerUser = asyncHandler(async (req, res) => {
+  const { name, email, password } = req.body;
 
-    //Validation
-    if(!name || !email || !password){
-        res.status(400)
-       throw new Error('Please include all fields')
+  //Validation
+  if (!name || !email || !password) {
+    res.status(400);
+    throw new Error("Please include all fields");
+  }
+
+  // Hash password
+  const salt = await bcrypt.genSalt(10);
+  const hashPassword = await bcrypt.hash(password, salt);
+
+  // Create User
+  const user = await User.create({
+    name,
+    email,
+    password: hashPassword,
+  });
+
+  if (user) {
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      token: generateToken(user._id),
+    });
+  } else {
+    res.status(400);
+    throw new error("Invalid user data");
+  }
+});
+
+//@desc   Register a new user
+// @route  /api/users
+//@access  Public
+const loginUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+
+  //Check user and password match
+  if (user && (await bcrypt.compare(password, user.password))) {
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      token: generateToken(user._id),
+    });
+  } else {
+    res.status(401);
+    throw new Error("Invalid credentials");
+  }
+});
+
+//@desc   Get current user
+// @route  /api/users/me
+//@access  Private
+const getMe = asyncHandler(async (req, res) => {
+    
+    const user = {
+        id: req.user._id,
+        email: req.user.email,
+        name: req.user.name
     }
-    res.send('Register Route')
+
+    res.status(200).json(user)
+      
 })
 
-
-
-//@desc   Register a new user
-// @route  /api/users
-//@access  Public
-const loginUser = asyncHandler(async(req, res)=>{
-    res.send('Login User')
-})
-
-module.exports ={
-    registerUser,
-    loginUser,
-}
+// Generate Token
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
+};
+module.exports = {
+  registerUser,
+  loginUser,
+  getMe,
+};
