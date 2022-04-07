@@ -1,22 +1,22 @@
-import { useEffect} from 'react'
+import { useEffect, useState} from 'react'
 import { toast } from 'react-toastify'
-/* import Modal from 'react-modal'
-import { FaPlus } from 'react-icons/fa' */
+import Modal from 'react-modal'
+import { FaPlus } from 'react-icons/fa' 
 import { useSelector, useDispatch } from 'react-redux'
-import { getTicket,reset/* , closeTicket */ } from '../features/tickets/ticketSlice'
-/* import {
+import { getTicket,closeTicket  } from '../features/tickets/ticketSlice'
+  import {
   getNotes,
-  createNote,
+  createNote, 
   reset as notesReset,
 } from '../features/notes/noteSlice'
 
-import NoteItem from '../components/NoteItem' */
-import { useParams} from 'react-router-dom'
+import NoteItem from '../components/NoteItem' 
+import { useParams, useNavigate} from 'react-router-dom'
 import BackButton from '../components/BackButton'
 import Spinner from '../components/Spinner'
 
 
-/* const customStyles = {
+ const customStyles = {
   content: {
     width: '600px',
     top: '50%',
@@ -29,21 +29,21 @@ import Spinner from '../components/Spinner'
   },
 } 
 
-Modal.setAppElement('#root')*/
+Modal.setAppElement('#root')
 
 function Ticket() {
-  /* const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [noteText, setNoteText] = useState('') */
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [noteText, setNoteText] = useState('') 
   const { ticket, isLoading, isSuccess, isError, message } = useSelector(
     (state) => state.tickets
   )
 
-  /* const { notes, isLoading: notesIsLoading } = useSelector(
-    (state) => state.notes
-  ) */
+   const { notes, isLoading: notesIsLoading } = useSelector(
+    (state) => state.notes 
+  ) 
 
   const params = useParams()
-  /* const navigate = useNavigate() */
+  const navigate = useNavigate() 
   const dispatch = useDispatch()
   const { ticketId } = useParams()
 
@@ -53,10 +53,10 @@ function Ticket() {
     }
 
     dispatch(getTicket(ticketId))
-    /* dispatch(getNotes(ticketId)) */
+     dispatch(getNotes(ticketId)) 
     // eslint-disable-next-line
   }, [isError, message, ticketId])
-/* 
+ 
   // Close ticket
   const onTicketClose = () => {
     dispatch(closeTicket(ticketId))
@@ -73,11 +73,11 @@ function Ticket() {
 
   // Open/close modal
   const openModal = () => setModalIsOpen(true)
-  const closeModal = () => setModalIsOpen(false)*/
+  const closeModal = () => setModalIsOpen(false)
 
-  if (isLoading /* || notesIsLoading */) {
+   if (isLoading  || notesIsLoading ) {
     return <Spinner />
-  } 
+  }  
 
   if (isError) {
     return <h3>Something Went Wrong</h3>
@@ -104,7 +104,7 @@ function Ticket() {
         </div>
         <h2>Notes</h2>
       </header>
-{/*
+
       {ticket.status !== 'closed' && (
         <button onClick={openModal} className='btn'>
           <FaPlus /> Add Note
@@ -148,7 +148,7 @@ function Ticket() {
         <button onClick={onTicketClose} className='btn btn-block btn-danger'>
           Close Ticket
         </button>
-      )}*/}
+      )}
     </div>   
       )
 }
