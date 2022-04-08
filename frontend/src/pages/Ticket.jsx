@@ -7,7 +7,7 @@ import { getTicket,closeTicket  } from '../features/tickets/ticketSlice'
   import {
   getNotes,
   createNote, 
-  reset as notesReset,
+  reset,
 } from '../features/notes/noteSlice'
 
 import NoteItem from '../components/NoteItem' 

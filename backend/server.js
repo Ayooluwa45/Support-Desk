@@ -1,8 +1,10 @@
+const path = require('path')
 const express = require('express')
 const colors = require('colors')
 const connectDB = require('./config/db')
 const dotenv = require('dotenv').config()
 const {errorHandler} = require('./middleware/errorMiddleware')
+const { processResult } = require('immer/dist/internal')
 const PORT = process.env.PORT || 5000
 
 
@@ -21,6 +23,17 @@ app.get('/', (req, res)=>{
 app.use('/api/users', require('./routes/userRoutes'))
 app.use('/api/tickets', require('./routes/ticketRoutes'))
 
+// Serve Frontend
+if (processResult.env.NODE_ENV === 'production'){
+    // Set build folder as static
+    app.use(express.static(path.join(_dirname, '../frontend/build')))
+
+    app.get('*', (req, res)=>res.sendFile(__dirname, '../', 'frontend', 'build', 'index.html'))
+}else{
+    app.get('/', (req, res)=>{
+        res.status(200).json({message: 'Welcome to the Support Desk API'})
+    })  
+}
 app.use(errorHandler)
 
 app.listen(PORT, ()=> console.log(`Server started on port ${PORT}`))
